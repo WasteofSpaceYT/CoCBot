@@ -58,7 +58,7 @@ client.on("message", async message => {
                 case "status":
                     //@ts-ignorea
                     CocClient.clanCurrentWarByTag("#2QQLQCYLQ").then(clan => {
-                        if (clan.state.toLowerCase() == "not_In_War") {
+                        if (clan.state.toLowerCase() == "notinwar") {
                             return message.reply("No war is currently in progress.");
                         }
                         if (clan.state.toLowerCase() == "preparation") {
@@ -81,10 +81,25 @@ client.on("message", async message => {
                                 .addField("Our Stars", clan.clan.stars, false)
                             return message.channel.send(embed);
                         }
-                        if (clan.state.toLowerCase() == "war_Ended") {
-                            return message.channel.send("War has ended.");
+                        if (clan.state.toLowerCase() == "warended") {
+                            const endEmbed = new MessageEmbed()
+                            if (clan.opponent.stars > clan.clan.stars) {
+                                endEmbed.setColor('#ff0000')
+                                endEmbed.setTitle(`${clan.opponent.name} won the war!`)
+                            } else {
+                                endEmbed.setColor('#7CFC00')
+                                endEmbed.setTitle(`${clan.clan.name} won the war!`)
+                            }
+
+                                endEmbed.setAuthor("Big Cocs", clan.clan.badgeUrls.small)
+                                .addField("War start time", formatDate(clan, "startTime"), false)
+                                .addField("War end time", formatDate(clan, "endTime"), false)
+                                .setImage(clan.opponent.badgeUrls.small)
+                                .addField("Opponent stars", clan.opponent.stars, false)
+                                .addField("Our Stars", clan.clan.stars, false)
+                            return message.channel.send(endEmbed);
                         }
-                        if (clan.state.toLowerCase() == "in_matchaking") {
+                        if (clan.state.toLowerCase() == "inmatchaking") {
                             return message.channel.send("War is currently in matchaking.");
                         }
                     }).catch((err: any) => {
